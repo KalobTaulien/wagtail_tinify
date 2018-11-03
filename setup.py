@@ -2,14 +2,17 @@
 from setuptools import find_packages, setup
 
 
+with open('README.md', 'r') as f:
+    readme = f.read()
+
 setup(
     name='wagtail_tinify',
-    version='0.0.3',
+    version='0.0.3a',
     packages=find_packages(),
     include_package_data=True,
     license='MIT',
     description='Automatically compress images (.jpg and .png) using tinypng.com.',
-    long_description='',
+    long_description=readme,
     url='https://github.com/KalobTaulien/wagtail_tinify',
     author='Kalob Taulien',
     author_email='kalob@kalob.io',
