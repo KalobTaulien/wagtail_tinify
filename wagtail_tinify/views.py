@@ -1,4 +1,5 @@
 """A way to tinify images on upload in the wagtail admin."""
+import importlib
 from django.conf import settings
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
@@ -24,6 +25,7 @@ tinify.key = settings.TINIFY_API_KEY
 @permission_checker.require('add')
 @vary_on_headers('X-Requested-With')
 def add(request):
+    """Almost the exact same method that Wagtail uses. But with TinyPNG and a callback."""
     Image = get_image_model()
     ImageForm = get_image_form(Image)
 
@@ -67,9 +69,20 @@ def add(request):
                     image.width = image.file.width
                     image.save()
                 except Exception:
-                    # @todo add proper exception handling. 
+                    # @todo add proper exception handling.
                     # For now just carry as normal.
                     pass
+
+            # Optional callback function, if specified.
+            # This will add the wagtail image object as the first param
+            # image_tinified is the second parameter to tell you whether
+            # the image was compressed or not.
+            if hasattr(settings, 'WAGTAIL_COMPRESS_CALLBACK'):
+                function_string = settings.WAGTAIL_COMPRESS_CALLBACK
+                mod_name, func_name = function_string.rsplit('.', 1)
+                mod = importlib.import_module(mod_name)
+                func = getattr(mod, func_name)
+                func(image=image, image_tinified=image.tinified)
 
             # Success! Send back an edit form for this image to the user
             return JsonResponse({
