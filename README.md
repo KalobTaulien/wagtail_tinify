@@ -37,4 +37,5 @@ def myfunc(image, image_tinified=False):
 
 ## Todos
 - [ ] Add proper TinyPNG exception handling
+- [ ] Check for jpg/png files explicitly. Don't bother sending data to TinyPNG if its a gif.
 - [ ] Add other compression services types
